@@ -8,6 +8,7 @@ extern "C" {
 struct musicstore;
 
 struct musicstore * ms_create ();
+
 void ms_destroy (struct musicstore *);
 
 int ms_read_from_directory (struct musicstore * s, const char * dirname);
