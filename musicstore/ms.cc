@@ -72,7 +72,7 @@ int main (int argc, char * argv[]) {
 			  (title.length() > 0 ? title.c_str() : nullptr),
 			  song_print);
 	} else if (command == "get_artist") {
-	    ms_get_artist (M[i], artist.c_str(), artist_print);
+	    ms_get_artist (M[i], (artist.length() > 0 ? artist.c_str() : nullptr), artist_print);
 	} else if (command == "get_albums") {
 	    ms_get_albums (M[i], (artist.length() > 0 ? artist.c_str() : nullptr),
 			   (album.length() > 0 ? album.c_str() : nullptr),
