@@ -81,7 +81,29 @@ int ms_read_from_directory(struct musicstore *ms, const char *path)
                     string tracknumber = filename.substr(0, filename.find(" - "));
                     filename = filename.substr(filename.find(" - ") + 3);
 
-                    string songname = filename.substr(0, filename.find(".")); //sistemare che se trova in punto si stoppa anche se non e' l'estensione 
+                    string songname;
+
+                    if (filename.find(".mp3") != string::npos)
+                    {
+                        songname = filename.substr(0, filename.find(".mp3"));
+                    }
+                    else if (filename.find(".ogg") != string::npos)
+                    {
+                        songname = filename.substr(0, filename.find(".ogg"));
+                    }
+                    else if (filename.find(".flac") != string::npos)
+                    {
+                        songname = filename.substr(0, filename.find(".flac"));
+                    }
+                    else if (filename.find(".wma") != string::npos)
+                    {
+                        songname = filename.substr(0, filename.find(".wma"));
+                    }
+                    else if (filename.find(".mpc") != string::npos)
+                    {
+                        songname = filename.substr(0, filename.find(".mpc"));
+                    }
+
                     ms->musicstoremap[artist][album][stoi(tracknumber)] = songname;
                     printf("artist: %s, album: %s, tracknumber: %s, songname: %s\n", artist.c_str(), album.c_str(), tracknumber.c_str(), songname.c_str());
                 }
@@ -117,7 +139,6 @@ void ms_get_artist(const struct musicstore *s, const char *artist, artist_callba
     }
     else
     {
-        // if artist is null, then we want to get all artists
         for (it = s->musicstoremap.begin(); it != s->musicstoremap.end(); it++)
         {
             songcount = 0;
@@ -230,15 +251,3 @@ void ms_get_songs(const struct musicstore *s, const char *artist, const char *al
         }
     }
 };
-
-// };
-
-// int main()
-// {
-//     struct musicstore *ms = ms_create();
-//     ms_read_from_directory(ms, "./tests/");
-//     // stamp songs
-
-//     ms_destroy(ms);
-//     return 0;
-// }
