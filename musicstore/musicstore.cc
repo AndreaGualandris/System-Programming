@@ -73,14 +73,15 @@ int ms_read_from_directory(struct musicstore *ms, const char *path)
                     filename.find(".wma") != string::npos ||
                     filename.find(".mpc") != string::npos)
                 {
-                    string artist = filename.substr(0, filename.find(" - ") - 1);
-                    filename = filename.substr(filename.find(" - ") + 2);
-                    string album = filename.substr(0, filename.find("-") - 1);
-                    filename = filename.substr(filename.find(" - ") + 2);
-                    string tracknumber = filename.substr(0, filename.find(" - ") - 1);
-                    filename = filename.substr(filename.find(" - ") + 2);
+                    string artist = filename.substr(0, filename.find(" - "));
+                    filename = filename.substr(filename.find(" - ")+3);
+                    string album = filename.substr(0, filename.find(" - ") - 1);
+                    filename = filename.substr(filename.find(" - ")+3 );
+                    string tracknumber = filename.substr(0, filename.find(" - "));
+                    filename = filename.substr(filename.find(" - ") +3);
                     string songname = filename.substr(0, filename.find("."));
                     ms->musicstoremap[artist][album][stoi(tracknumber)] = songname;
+                    printf("artist: %s, album: %s, tracknumber: %s, songname: %s\n", artist.c_str(), album.c_str(), tracknumber.c_str(), songname.c_str());
                 }
             }
         }
@@ -104,36 +105,30 @@ typedef void (*artist_callback)(const char *artist, unsigned albums_count,
 
 void ms_get_artist(const struct musicstore *s,
                    const char *artist, artist_callback cb)
-                
 {
-// error: passing ‘const std::map<std::__cxx11::basic_string<char>, std::map<std::__cxx11::basic_string<char>, std::map<int, std::__cxx11::basic_string<char> > > >’ as ‘this’ argument discards qualifiers [-fpermissive]
-//   110 |         unsigned  albums_count = s->musicstoremap[artist].size();
-
-    
-
-    if (artist != NULL)
-    {
-        unsigned int albums_count = s->musicstoremap.size();
-        unsigned int songs_count = 0;
-        for (auto album : s->musicstoremap[artist])
-        {
-            songs_count += album.second.size();
-        }
-        cb(artist, albums_count, songs_count);
-    }
-    else
-    {
-        for (auto artist : s->musicstoremap)
-        {
-            unsigned int albums_count = artist.second.size();
-            unsigned int songs_count = 0;
-            for (auto album : artist.second)
-            {
-                songs_count += album.second.size();
-            }
-            cb(artist.first.c_str(), albums_count, songs_count);
-        }
-    }
+    // if (artist != NULL)
+    // {
+    //     unsigned int albums_count = s->musicstoremap.size();
+    //     unsigned int songs_count = 0;
+    //     for (auto album : s->musicstoremap[artist])
+    //     {
+    //         songs_count += album.second.size();
+    //     }
+    //     cb(artist, albums_count, songs_count);
+    // }
+    // else
+    // {
+    //     for (auto artist : s->musicstoremap)
+    //     {
+    //         unsigned int albums_count = artist.second.size();
+    //         unsigned int songs_count = 0;
+    //         for (auto album : artist.second)
+    //         {
+    //             songs_count += album.second.size();
+    //         }
+    //         cb(artist.first.c_str(), albums_count, songs_count);
+    //     }
+    // }
 };
 
 // void ms_get_albums(const struct musicstore *s,
@@ -195,3 +190,14 @@ void ms_get_songs (const struct musicstore * s,
 
     
 // };
+
+
+int main()
+{
+    struct musicstore * ms = ms_create();
+    ms_read_from_directory(ms, "./tests/");
+    //stamp songs
+    
+    ms_destroy(ms);
+    return 0;
+}
