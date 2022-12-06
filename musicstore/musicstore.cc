@@ -35,16 +35,17 @@ struct musicstore
     map<string, map<string, map<int, string>>> musicstoremap;
 };
 
-struct musicstore * ms_create (){
-    struct musicstore * ms = new struct musicstore;
+struct musicstore *ms_create()
+{
+    struct musicstore *ms = new struct musicstore;
     return ms;
 };
 
-void ms_destroy (struct musicstore *ms){
+void ms_destroy(struct musicstore *ms)
+{
     delete ms;
 };
 
-// find all files in directory and subdirectories formatted as follow: artisr - album - tracknumber - songname.extension
 int ms_read_from_directory(struct musicstore *ms, const char *path)
 {
     DIR *dir;
@@ -53,6 +54,8 @@ int ms_read_from_directory(struct musicstore *ms, const char *path)
     {
         while ((ent = readdir(dir)) != NULL)
         {
+            string filename = ent->d_name;
+
             if (ent->d_name[0] == '.')
                 continue;
 
@@ -65,8 +68,6 @@ int ms_read_from_directory(struct musicstore *ms, const char *path)
             }
             else
             {
-                string filename = ent->d_name;
-
                 if (filename.find(".mp3") != string::npos ||
                     filename.find(".ogg") != string::npos ||
                     filename.find(".flac") != string::npos ||
@@ -74,12 +75,13 @@ int ms_read_from_directory(struct musicstore *ms, const char *path)
                     filename.find(".mpc") != string::npos)
                 {
                     string artist = filename.substr(0, filename.find(" - "));
-                    filename = filename.substr(filename.find(" - ")+3);
-                    string album = filename.substr(0, filename.find(" - ") - 1);
-                    filename = filename.substr(filename.find(" - ")+3 );
+                    filename = filename.substr(filename.find(" - ") + 3);
+                    string album = filename.substr(0, filename.find(" - "));
+                    filename = filename.substr(filename.find(" - ") + 3);
                     string tracknumber = filename.substr(0, filename.find(" - "));
-                    filename = filename.substr(filename.find(" - ") +3);
-                    string songname = filename.substr(0, filename.find("."));
+                    filename = filename.substr(filename.find(" - ") + 3);
+
+                    string songname = filename.substr(0, filename.find(".")); //sistemare che se trova in punto si stoppa anche se non e' l'estensione 
                     ms->musicstoremap[artist][album][stoi(tracknumber)] = songname;
                     printf("artist: %s, album: %s, tracknumber: %s, songname: %s\n", artist.c_str(), album.c_str(), tracknumber.c_str(), songname.c_str());
                 }
@@ -89,115 +91,154 @@ int ms_read_from_directory(struct musicstore *ms, const char *path)
     }
     else
     {
-        return 1;
+        return 0;
     }
-    return 0;
+    return 1;
 }
 
-typedef void (*song_callback)(const char *artist, const char *album,
-                              unsigned sequence, const char *title);
-
-typedef void (*album_callback)(const char *artist, const char *album,
-                               unsigned songs_count);
-
-typedef void (*artist_callback)(const char *artist, unsigned albums_count,
-                                unsigned songs_count);
-
-void ms_get_artist(const struct musicstore *s,
-                   const char *artist, artist_callback cb)
+void ms_get_artist(const struct musicstore *s, const char *artist, artist_callback cb)
 {
-    // if (artist != NULL)
-    // {
-    //     unsigned int albums_count = s->musicstoremap.size();
-    //     unsigned int songs_count = 0;
-    //     for (auto album : s->musicstoremap[artist])
-    //     {
-    //         songs_count += album.second.size();
-    //     }
-    //     cb(artist, albums_count, songs_count);
-    // }
-    // else
-    // {
-    //     for (auto artist : s->musicstoremap)
-    //     {
-    //         unsigned int albums_count = artist.second.size();
-    //         unsigned int songs_count = 0;
-    //         for (auto album : artist.second)
-    //         {
-    //             songs_count += album.second.size();
-    //         }
-    //         cb(artist.first.c_str(), albums_count, songs_count);
-    //     }
-    // }
+    map<string, map<string, map<int, string>>>::const_iterator it;
+    int songcount = 0;
+    map<string, map<int, string>>::const_iterator it2;
+
+    if (artist != NULL)
+    {
+        it = s->musicstoremap.find(artist);
+        if (it != s->musicstoremap.end())
+        {
+            for (it2 = it->second.begin(); it2 != it->second.end(); it2++)
+            {
+                songcount += it2->second.size();
+            }
+
+            cb(artist, it->second.size(), songcount);
+        }
+    }
+    else
+    {
+        // if artist is null, then we want to get all artists
+        for (it = s->musicstoremap.begin(); it != s->musicstoremap.end(); it++)
+        {
+            songcount = 0;
+            for (it2 = it->second.begin(); it2 != it->second.end(); it2++)
+            {
+                songcount += it2->second.size();
+            }
+            cb(it->first.c_str(), it->second.size(), songcount);
+        }
+    }
 };
 
-// void ms_get_albums(const struct musicstore *s,
-//                    const char *artist, const char *album, album_callback cb)
-// {
-//     if (artist != NULL && album != NULL)
-//     {
-//         unsigned int songs_count = s->musicstoremap[artist][album].size();
-//         cb(artist, album, songs_count);
-//     }
-//     else if (artist != NULL && album == NULL)
-//     {
-//         for (auto album : s->musicstoremap[artist])
-//         {
-//             unsigned int songs_count = album.second.size();
-//             cb(artist, album.first.c_str(), songs_count);
-//         }
-//     }
-//     else if (artist == NULL && album != NULL)
-//     {
-//         for (auto artist : s->musicstoremap)
-//         {
-//             for (auto album : artist.second)
-//             {
-//                 if (album.first == album)
-//                 {
-//                     unsigned int songs_count = album.second.size();
-//                     cb(artist.first.c_str(), album.first.c_str(), songs_count);
-//                 }
-//             }
-//         }
-//     }
-//     else
-//     {
-//         for (auto artist : s->musicstoremap)
-//         {
-//             for (auto album : artist.second)
-//             {
-//                 unsigned int songs_count = album.second.size();
-//                 cb(artist.first.c_str(), album.first.c_str(), songs_count);
-//             }
-//         }
-//     }
-
-// };
-
-// void ms_get_songs(const struct musicstore *s,
-//                   const char *artist, const char *album, const char *title,
-//                   song_callback cb)
-// {
-
-void ms_get_albums (const struct musicstore * s,
-		    const char * artist, const char * album, album_callback cb){};
-
-void ms_get_songs (const struct musicstore * s,
-		   const char * artist, const char * album, const char * title,
-		   song_callback cb){};
-
-
-    
-// };
-
-
-int main()
+void ms_get_albums(const struct musicstore *s, const char *artist, const char *album, album_callback cb)
 {
-    struct musicstore * ms = ms_create();
-    ms_read_from_directory(ms, "./tests/");
-    //stamp songs
-    
-    ms_destroy(ms);
-    return 0;
-}
+    map<string, map<string, map<int, string>>>::const_iterator it;
+    map<string, map<int, string>>::const_iterator it2;
+
+    if (artist != NULL)
+    {
+        it = s->musicstoremap.find(artist);
+        if (it != s->musicstoremap.end())
+        {
+            if (album != NULL)
+            {
+                it2 = it->second.find(album);
+                if (it2 != it->second.end())
+                {
+                    cb(artist, album, it2->second.size());
+                }
+            }
+            else
+            {
+                for (it2 = it->second.begin(); it2 != it->second.end(); it2++)
+                {
+                    cb(artist, it2->first.c_str(), it2->second.size());
+                }
+            }
+        }
+    }
+    else
+    {
+        for (it = s->musicstoremap.begin(); it != s->musicstoremap.end(); it++)
+        {
+            for (it2 = it->second.begin(); it2 != it->second.end(); it2++)
+            {
+                cb(it->first.c_str(), it2->first.c_str(), it2->second.size());
+            }
+        }
+    }
+};
+
+void ms_get_songs(const struct musicstore *s, const char *artist, const char *album, const char *title, song_callback cb)
+{
+    map<string, map<string, map<int, string>>>::const_iterator it;
+    map<string, map<int, string>>::const_iterator it2;
+    map<int, string>::const_iterator it3;
+
+    if (artist != NULL)
+    {
+        it = s->musicstoremap.find(artist);
+        if (it != s->musicstoremap.end())
+        {
+            if (album != NULL)
+            {
+                it2 = it->second.find(album);
+                if (it2 != it->second.end())
+                {
+                    if (title != NULL)
+                    {
+                        for (it3 = it2->second.begin(); it3 != it2->second.end(); it3++)
+                        {
+                            if (it3->second == title)
+                            {
+                                cb(artist, album, it3->first, it3->second.c_str());
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (it3 = it2->second.begin(); it3 != it2->second.end(); it3++)
+                        {
+                            cb(artist, album, it3->first, it3->second.c_str());
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (it2 = it->second.begin(); it2 != it->second.end(); it2++)
+                {
+                    for (it3 = it2->second.begin(); it3 != it2->second.end(); it3++)
+                    {
+                        cb(artist, it2->first.c_str(), it3->first, it3->second.c_str());
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        for (it = s->musicstoremap.begin(); it != s->musicstoremap.end(); it++)
+        {
+            for (it2 = it->second.begin(); it2 != it->second.end(); it2++)
+            {
+                for (it3 = it2->second.begin(); it3 != it2->second.end(); it3++)
+                {
+                    cb(it->first.c_str(), it2->first.c_str(), it3->first, it3->second.c_str());
+                }
+            }
+        }
+    }
+};
+
+// };
+
+// int main()
+// {
+//     struct musicstore *ms = ms_create();
+//     ms_read_from_directory(ms, "./tests/");
+//     // stamp songs
+
+//     ms_destroy(ms);
+//     return 0;
+// }
