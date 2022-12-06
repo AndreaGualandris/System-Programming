@@ -192,12 +192,13 @@ void ms_get_albums(const struct musicstore *s, const char *artist, const char *a
 
 void ms_get_songs(const struct musicstore *s, const char *artist, const char *album, const char *title, song_callback cb)
 {
-    map<string, map<string, map<int, string>>>::const_iterator it;
-    map<string, map<int, string>>::const_iterator it2;
-    map<int, string>::const_iterator it3;
 
     if (artist != NULL)
     {
+        map<string, map<string, map<int, string>>>::const_iterator it;
+        map<string, map<int, string>>::const_iterator it2;
+        map<int, string>::const_iterator it3;
+
         it = s->musicstoremap.find(artist);
         if (it != s->musicstoremap.end())
         {
@@ -239,13 +240,47 @@ void ms_get_songs(const struct musicstore *s, const char *artist, const char *al
     }
     else
     {
-        for (it = s->musicstoremap.begin(); it != s->musicstoremap.end(); it++)
+        map<string, map<string, map<int, string>>>::const_iterator it;
+        map<string, map<int, string>>::const_iterator it2;
+        map<int, string>::const_iterator it3;
+
+        if (album != NULL)
         {
-            for (it2 = it->second.begin(); it2 != it->second.end(); it2++)
+            for (it = s->musicstoremap.begin(); it != s->musicstoremap.end(); it++)
             {
-                for (it3 = it2->second.begin(); it3 != it2->second.end(); it3++)
+                it2 = it->second.find(album);
+                if (it2 != it->second.end())
                 {
-                    cb(it->first.c_str(), it2->first.c_str(), it3->first, it3->second.c_str());
+                    if (title != NULL)
+                    {
+                        for (it3 = it2->second.begin(); it3 != it2->second.end(); it3++)
+                        {
+                            if (it3->second == title)
+                            {
+                                cb(it->first.c_str(), album, it3->first, it3->second.c_str());
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (it3 = it2->second.begin(); it3 != it2->second.end(); it3++)
+                        {
+                            cb(it->first.c_str(), album, it3->first, it3->second.c_str());
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (it = s->musicstoremap.begin(); it != s->musicstoremap.end(); it++)
+            {
+                for (it2 = it->second.begin(); it2 != it->second.end(); it2++)
+                {
+                    for (it3 = it2->second.begin(); it3 != it2->second.end(); it3++)
+                    {
+                        cb(it->first.c_str(), it2->first.c_str(), it3->first, it3->second.c_str());
+                    }
                 }
             }
         }
