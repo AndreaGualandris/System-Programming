@@ -48,6 +48,9 @@ void ms_destroy(struct musicstore *ms)
 
 int ms_read_from_directory(struct musicstore *ms, const char *path)
 {
+    // command 
+    // path ./tests/acdc
+
     DIR *dir;
     struct dirent *ent;
     if ((dir = opendir(path)) != NULL)
@@ -155,6 +158,7 @@ void ms_get_albums(const struct musicstore *s, const char *artist, const char *a
 {
     map<string, map<string, map<int, string>>>::const_iterator it;
     map<string, map<int, string>>::const_iterator it2;
+    map<int, string>::const_iterator it3;
 
     if (artist != NULL)
     {
@@ -180,15 +184,19 @@ void ms_get_albums(const struct musicstore *s, const char *artist, const char *a
     }
     else
     {
-        for (it = s->musicstoremap.begin(); it != s->musicstoremap.end(); it++)
+        if (album != NULL)
         {
-            for (it2 = it->second.begin(); it2 != it->second.end(); it2++)
+            for (it = s->musicstoremap.begin(); it != s->musicstoremap.end(); it++)
             {
-                cb(it->first.c_str(), it2->first.c_str(), it2->second.size());
+                it2 = it->second.find(album);
+                if (it2 != it->second.end())
+                {
+                    cb(it->first.c_str(), album, it2->second.size());
+                }
             }
         }
     }
-};
+}
 
 void ms_get_songs(const struct musicstore *s, const char *artist, const char *album, const char *title, song_callback cb)
 {

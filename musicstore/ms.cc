@@ -8,7 +8,7 @@
 
 void song_print (const char * artist, const char * album, unsigned sequence, const char * title) {
     std::cout << "Artist: " << artist << ", Album: " << album
-	      << "Track (" << sequence << "): " << title << std::endl;
+	      << ", Track (" << sequence << "): " << title << std::endl;
 }
 
 void album_print (const char * artist, const char * album, unsigned songs_count) {
