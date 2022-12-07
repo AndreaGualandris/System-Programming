@@ -7,27 +7,6 @@
 
 #include "musicstore.h"
 
-// struct song
-// {
-//     std::string name;
-// };
-
-// struct album
-// {
-//     std::string name;
-//     std::map<unsigned int, song> songs;
-// };
-
-// struct artist
-// {
-//     std::string name;
-//     std::map<unsigned int, album> albums;
-// };
-
-// struct musicstore
-// {
-//     std::map<unsigned int, artist> artists;
-// };
 using namespace std;
 
 struct musicstore
@@ -48,7 +27,7 @@ void ms_destroy(struct musicstore *ms)
 
 int ms_read_from_directory(struct musicstore *ms, const char *path)
 {
-    // command 
+    // command read ./tests/acdc
     // path ./tests/acdc
 
     DIR *dir;
@@ -195,6 +174,16 @@ void ms_get_albums(const struct musicstore *s, const char *artist, const char *a
                 }
             }
         }
+        else
+        {
+            for (it = s->musicstoremap.begin(); it != s->musicstoremap.end(); it++)
+            {
+                for (it2 = it->second.begin(); it2 != it->second.end(); it2++)
+                {
+                    cb(it->first.c_str(), it2->first.c_str(), it2->second.size());
+                }
+            }
+        }
     }
 }
 
@@ -236,11 +225,27 @@ void ms_get_songs(const struct musicstore *s, const char *artist, const char *al
             }
             else
             {
-                for (it2 = it->second.begin(); it2 != it->second.end(); it2++)
+                if (title != NULL)
                 {
-                    for (it3 = it2->second.begin(); it3 != it2->second.end(); it3++)
+                    for (it2 = it->second.begin(); it2 != it->second.end(); it2++)
                     {
-                        cb(artist, it2->first.c_str(), it3->first, it3->second.c_str());
+                        for (it3 = it2->second.begin(); it3 != it2->second.end(); it3++)
+                        {
+                            if (it3->second == title)
+                            {
+                                cb(artist, it2->first.c_str(), it3->first, it3->second.c_str());
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    for (it2 = it->second.begin(); it2 != it->second.end(); it2++)
+                    {
+                        for (it3 = it2->second.begin(); it3 != it2->second.end(); it3++)
+                        {
+                            cb(artist, it2->first.c_str(), it3->first, it3->second.c_str());
+                        }
                     }
                 }
             }
@@ -281,13 +286,33 @@ void ms_get_songs(const struct musicstore *s, const char *artist, const char *al
         }
         else
         {
-            for (it = s->musicstoremap.begin(); it != s->musicstoremap.end(); it++)
+
+            if (title != NULL)
             {
-                for (it2 = it->second.begin(); it2 != it->second.end(); it2++)
+                for (it = s->musicstoremap.begin(); it != s->musicstoremap.end(); it++)
                 {
-                    for (it3 = it2->second.begin(); it3 != it2->second.end(); it3++)
+                    for (it2 = it->second.begin(); it2 != it->second.end(); it2++)
                     {
-                        cb(it->first.c_str(), it2->first.c_str(), it3->first, it3->second.c_str());
+                        for (it3 = it2->second.begin(); it3 != it2->second.end(); it3++)
+                        {
+                            if (it3->second == title)
+                            {
+                                cb(it->first.c_str(), it2->first.c_str(), it3->first, it3->second.c_str());
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (it = s->musicstoremap.begin(); it != s->musicstoremap.end(); it++)
+                {
+                    for (it2 = it->second.begin(); it2 != it->second.end(); it2++)
+                    {
+                        for (it3 = it2->second.begin(); it3 != it2->second.end(); it3++)
+                        {
+                            cb(it->first.c_str(), it2->first.c_str(), it3->first, it3->second.c_str());
+                        }
                     }
                 }
             }
