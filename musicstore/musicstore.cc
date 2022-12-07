@@ -189,12 +189,12 @@ void ms_get_albums(const struct musicstore *s, const char *artist, const char *a
 
 void ms_get_songs(const struct musicstore *s, const char *artist, const char *album, const char *title, song_callback cb)
 {
+    map<string, map<string, map<int, string>>>::const_iterator it;
+    map<string, map<int, string>>::const_iterator it2;
+    map<int, string>::const_iterator it3;
 
     if (artist != NULL)
     {
-        map<string, map<string, map<int, string>>>::const_iterator it;
-        map<string, map<int, string>>::const_iterator it2;
-        map<int, string>::const_iterator it3;
 
         it = s->musicstoremap.find(artist);
         if (it != s->musicstoremap.end())
@@ -253,9 +253,6 @@ void ms_get_songs(const struct musicstore *s, const char *artist, const char *al
     }
     else
     {
-        map<string, map<string, map<int, string>>>::const_iterator it;
-        map<string, map<int, string>>::const_iterator it2;
-        map<int, string>::const_iterator it3;
 
         if (album != NULL)
         {
