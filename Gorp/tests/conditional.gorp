@@ -1,0 +1,5 @@
+0 { 2 2 2 2 2 2 2 2 2 2 2 * * * * * * * * * * output } if
+0 { ! } { ? } ifelse output
+0 1 == { ! } { ? } ifelse output
+0 1 != { 0 { # } { % } ifelse } { ? } ifelse output
+0 { 0 { 0 { 0 { : } if } if } if } if output

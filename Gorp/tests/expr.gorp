@@ -1,0 +1,5 @@
+10 20 + output
+1 2 + 3 * output
+1 2 3 + * output
+1 2 3 / 4 5 * - * output
+2 2 2 2 2 2 2 2 2 2 * * * * * * * * * output

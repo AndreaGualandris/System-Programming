@@ -1,0 +1,16 @@
+0 n store
+do {
+    input
+    dup {
+    	A n load . store n load	1 + n store
+	continue
+    } if
+} while 
+do {
+    n load
+    0 != 
+    dup {
+        A n load 1 - dup n store . load
+	output
+    } if
+} while

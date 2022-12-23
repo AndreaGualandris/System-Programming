@@ -1,0 +1,19 @@
+input dup {
+    n store
+    2 d store
+    n load dup d load / d load * != p store
+    p load {
+        d load dup * n load > {
+	    0 1 ==
+	} {
+            n load dup d load / d load * != p store
+            d load 1 + d store
+            p load
+        } ifelse
+    } while
+    p load {
+        n load _is_prime . output
+    } {
+        n load _is_composite . output
+    } ifelse
+} if

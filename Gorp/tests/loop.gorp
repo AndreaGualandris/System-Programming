@@ -1,0 +1,1 @@
+do { loop! output input 0 != } while

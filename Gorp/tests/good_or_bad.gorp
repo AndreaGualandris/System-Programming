@@ -1,0 +1,12 @@
+input
+100 > {
+    Good
+    day
+    input
+    . 
+} {
+    Bad!
+}
+ifelse
+output
+output

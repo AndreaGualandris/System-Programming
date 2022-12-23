@@ -1,0 +1,32 @@
+0 n store
+do {
+    input
+    dup {
+    	n load store n load 1 + n store
+	continue
+    } if
+} while 
+1 i store
+1 n load < {
+    i load j store
+    j load 1 - load j load load > {
+        j load 1 - load
+	j load load
+	j load 1 - store
+	j load store
+	j load 1 - j store
+	j load 0 == {
+            1 0 ==
+	} {
+	    j load 1 - load j load load > 
+        } ifelse
+    } while
+    i load 1 + dup i store
+    n load <
+} while
+0 i store
+0 n load < {
+    i load load output
+    i load 1 + dup i store
+    n load <
+} while

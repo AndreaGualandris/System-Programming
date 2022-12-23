@@ -1,0 +1,9 @@
+0
+do {
+    input
+    dup {
+        +
+        continue
+    } if
+} while
+output

@@ -1,0 +1,10 @@
+50000
+do {
+   dup 1 - dup 0 !=
+} while
+50000 n store
+do {
+   +
+   n load 1 - dup n store 0 !=
+} while
+output
