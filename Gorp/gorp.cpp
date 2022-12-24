@@ -15,6 +15,9 @@ void cond_ifelse();
 
 string popStack()
 {
+    if(s.empty())
+        return "";
+
     string word = s.top();
     s.pop();
     return word;
@@ -323,13 +326,18 @@ int main()
 
     // read a line from the stdin and push it onto the stack word by word, if there is a { it will push only the block of code into the parenthesis} into the stack
 
-    // solve_stack(s, variables);
-
     string line;
 
     while (getline(cin, line))
     {
-        read_input(line);
+        try
+        {
+            read_input(line);
+        }
+        catch(const std::exception& e)
+        {
+            cerr << "Error: " << e.what() << '\n';
+        }
     }
 
     // while (!s.empty())
