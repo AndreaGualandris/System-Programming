@@ -21,6 +21,9 @@ void add()
 {
     string b = popStack();
     string a = popStack();
+
+    cout << "a: " << a << " b: " << b << endl;
+
     s.push(to_string(stoi(a) + stoi(b)));
 }
 
@@ -87,6 +90,13 @@ void less_equal_fun()
     s.push(to_string(a <= b)); // attenzione a cosa sto pushando
 }
 
+void concat_fun()
+{
+    string b = popStack();
+    string a = popStack();
+    s.push(a + b);
+}
+
 void load()
 {
     string var = popStack();
@@ -108,12 +118,10 @@ void cond_if()
     string c = popStack();
 
     if (c == "")
-        cout << b; //eseguire il; codice contenuto in b, se possibile scriverlo su cin e poi chiamare la funzione read_input 
+        cout << b; // eseguire il; codice contenuto in b, se possibile scriverlo su cin e poi chiamare la funzione read_input
     else
         cout << a;
 }
-
-
 
 int check_operation(string word)
 {
@@ -125,56 +133,79 @@ int check_operation(string word)
     else if (word == "-")
     {
         sub();
+        return 1;
     }
     else if (word == "*")
     {
         mul();
+        return 1;
     }
     else if (word == "/")
     {
         div();
+        return 1;
     }
     else if (word == ">")
     {
         greater_fun();
+        return 1;
     }
     else if (word == "<")
     {
         less_fun();
+        return 1;
     }
     else if (word == "==")
     {
         equal();
+        return 1;
     }
     else if (word == "!=")
     {
         not_equal();
+        return 1;
     }
     else if (word == ">=")
     {
         greater_equal_fun();
+        return 1;
     }
     else if (word == "<=")
     {
         less_equal_fun();
+        return 1;
+    }
+    else if (word == ".")
+    {
+        concat_fun();
+        return 1;
     }
     else if (word == "load")
     {
         load();
+        return 1;
     }
     else if (word == "store")
     {
         store();
+        return 1;
     }
     else if (word == "if")
     {
         cond_if();
+        return 1;
     }
     else if (word.find("input"))
     {
         string input;
         cin >> input;
         s.push(input); // controllare se e' apposto
+        return 1;
+    }
+    else if (word.find("output"))
+    {
+        cout << popStack();
+        return 1;
     }
     else
     {
@@ -182,11 +213,11 @@ int check_operation(string word)
     }
 }
 
-int addition()
-{
-}
+// int addition()
+// {
+// }
 
-void read_input()
+void read_input(string line) // passare la stringa da cui leggere per i blocchi di codice nello stack
 {
     int open = 0;
     string line;
@@ -201,8 +232,7 @@ void read_input()
             // call function for check the symbols and the variables
             if (check_operation(word))
                 continue;
-
-            if (word == "{")
+            else if (word == "{")
             {
                 string block;
                 while (iss >> word)
@@ -225,6 +255,7 @@ void read_input()
             }
             else
             {
+                cout << word << endl;
                 s.push(word);
             }
         }
@@ -238,10 +269,15 @@ int main()
 
     // solve_stack(s, variables);
 
-    while (!s.empty())
-    {
-        cout << s.top() << endl;
-        s.pop();
-    }
-}
+    string line;
 
+    while (getline(cin, line)){
+        read_input(line);
+    }
+
+    // while (!s.empty())
+    // {
+    //     cout << s.top() << endl;
+    //     s.pop();
+    // }
+}
