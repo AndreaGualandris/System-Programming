@@ -10,6 +10,9 @@ using namespace std;
 map<string, string> variables;
 stack<string> s;
 
+void read_input(string line);
+void cond_ifelse();
+
 string popStack()
 {
     string word = s.top();
@@ -21,8 +24,6 @@ void add()
 {
     string b = popStack();
     string a = popStack();
-
-    cout << "a: " << a << " b: " << b << endl;
 
     s.push(to_string(stoi(a) + stoi(b)));
 }
@@ -52,42 +53,60 @@ void greater_fun()
 {
     int b = stoi(popStack());
     int a = stoi(popStack());
-    s.push(to_string(a > b)); // attenzione a cosa sto pushando (note: devi pushare true o stringa vuota)
+    if (a > b)
+        s.push("true");
+    else
+        s.push("");
 }
 
 void less_fun()
 {
     int b = stoi(popStack());
     int a = stoi(popStack());
-    s.push(to_string(a < b)); // attenzione a cosa sto pushando
+    if (a < b)
+        s.push("true");
+    else
+        s.push("");
 }
 
 void equal()
 {
     int b = stoi(popStack());
     int a = stoi(popStack());
-    s.push(to_string(a == b)); // attenzione a cosa sto pushando
+    if (a == b)
+        s.push("true");
+    else
+        s.push("");
 }
 
 void not_equal()
 {
     int b = stoi(popStack());
     int a = stoi(popStack());
-    s.push(to_string(a != b)); // attenzione a cosa sto pushando
+    if (a != b)
+        s.push("true");
+    else
+        s.push("");
 }
 
 void greater_equal_fun()
 {
     int b = stoi(popStack());
     int a = stoi(popStack());
-    s.push(to_string(a >= b)); // attenzione a cosa sto pushando
+    if (a >= b)
+        s.push("true");
+    else
+        s.push("");
 }
 
 void less_equal_fun()
 {
     int b = stoi(popStack());
     int a = stoi(popStack());
-    s.push(to_string(a <= b)); // attenzione a cosa sto pushando
+    if (a <= b)
+        s.push("true");
+    else
+        s.push("");
 }
 
 void concat_fun()
@@ -112,16 +131,43 @@ void store()
 
 void cond_if()
 {
-    // pop 3 timesa b, a , c. if (c != emptyString) -> cout a else -> cout b
+    string a = popStack();
+    string c = popStack();
+
+    if (c != "")
+        read_input(a);
+}
+
+void cond_ifelse()
+{
     string b = popStack();
     string a = popStack();
     string c = popStack();
 
     if (c == "")
-        cout << b; // eseguire il; codice contenuto in b, se possibile scriverlo su cin e poi chiamare la funzione read_input
+        read_input(b);
     else
-        cout << a;
+        read_input(a);
+        
 }
+
+void duplicate()
+{
+    string a = popStack();
+    s.push(a);
+    s.push(a);
+}
+
+void while_fun(){
+    string a = popStack();
+    string c = popStack();
+    while(c != ""){
+        read_input(a);
+        c = popStack();
+    }
+}
+
+
 
 int check_operation(string word)
 {
@@ -195,16 +241,31 @@ int check_operation(string word)
         cond_if();
         return 1;
     }
-    else if (word.find("input"))
+    else if (word == "ifelse")
+    {
+        cond_ifelse();
+        return 1;
+    }
+    else if (word == "dup")
+    {
+        duplicate();
+        return 1;
+    }
+    else if (word == "while")
+    {
+        while_fun();
+        return 1;
+    }
+    else if (word.find("input") != string::npos)
     {
         string input;
         cin >> input;
         s.push(input); // controllare se e' apposto
         return 1;
     }
-    else if (word.find("output"))
+    else if (word.find("output") != string::npos)
     {
-        cout << popStack();
+        cout << popStack() << endl;
         return 1;
     }
     else
@@ -213,54 +274,49 @@ int check_operation(string word)
     }
 }
 
-// int addition()
-// {
-// }
 
 void read_input(string line) // passare la stringa da cui leggere per i blocchi di codice nello stack
 {
     int open = 0;
-    string line;
 
-    while (getline(cin, line))
+    istringstream iss(line);
+    string word;
+
+    while (iss >> word)
     {
-        istringstream iss(line);
-        string word;
-
-        while (iss >> word)
+        // call function for check the symbols and the variables
+        if (check_operation(word))
+            continue;
+        else if (word == "{")
         {
-            // call function for check the symbols and the variables
-            if (check_operation(word))
-                continue;
-            else if (word == "{")
+            string block;
+            while (iss >> word)
             {
-                string block;
-                while (iss >> word)
+                if (word == "{")
                 {
-                    if (word == "{")
-                    {
-                        open++;
-                    }
-                    else if (open > 0 && word == "}")
-                    {
-                        open--;
-                    }
-                    else if (word == "}" && open == 0)
-                    {
-                        break;
-                    }
-                    block += word + " ";
+                    open++;
                 }
-                s.push(block);
+                else if (open > 0 && word == "}")
+                {
+                    open--;
+                }
+                else if (word == "}" && open == 0)
+                {
+                    break;
+                }
+                block += word + " ";
             }
-            else
-            {
-                cout << word << endl;
-                s.push(word);
-            }
+            s.push(block);
+        }
+        else
+        {
+            // cout << word << endl;
+            s.push(word);
         }
     }
 }
+
+
 
 int main()
 {
@@ -271,7 +327,8 @@ int main()
 
     string line;
 
-    while (getline(cin, line)){
+    while (getline(cin, line))
+    {
         read_input(line);
     }
 
