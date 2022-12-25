@@ -276,7 +276,7 @@ int check_operation(string word)
 }
 
 
-void read_input(string line) // passare la stringa da cui leggere per i blocchi di codice nello stack
+void read_input(string line) 
 {
     int open = 0;
 
@@ -304,7 +304,6 @@ void read_input(string line) // passare la stringa da cui leggere per i blocchi 
                 }
                 else if (word == "}" && open == 0)
                 {
-                    // cout << "Error: Invalid Sintax \"}\" " << endl;       //invalid sintax
                     break;
                 }
                 block += word + " ";
@@ -318,72 +317,6 @@ void read_input(string line) // passare la stringa da cui leggere per i blocchi 
     }
 }
 
-// void read_input2(string file) // passare la stringa da cui leggere per i blocchi di codice nello stack
-// {
-//     int open = 0;
-//     int exit = 1;
-
-//     ifstream myfile(file);
-//     string line;
-
-//     while (getline(myfile, line))
-//     {
-//         istringstream iss(line);
-//         string word;
-
-//         while (iss >> word)
-//         {
-//             // call function for check the keys and the variables
-//             if (check_operation(word))
-//                 continue;
-
-//             else if (word == "{")
-//             {
-//                 open++;
-//                 string block;
-
-//                 while (exit)
-//                 {
-//                     iss >> word;
-
-//                     if (iss.fail() && open != 0)
-//                     {
-//                         getline(myfile, line);
-//                         istringstream iss(line);
-//                         iss >> word;
-//                     }
-//                     else if (iss.fail() && open == 0)
-//                     {
-//                         break;
-//                     }
-
-//                     if (word == "{")
-//                     {
-//                         open++;
-//                     }
-//                     else if (open > 0 && word == "}")
-//                     {
-//                         open--;
-//                     }
-
-//                     if (word == "}" && open == 0 && iss.fail())
-//                     {
-//                         // cout << "Error: Invalid Sintax \"}\" " << endl;       //invalid sintax
-//                         break;
-//                     }
-//                     block += word + " ";
-
-//                     // non finisce di leggere la riga quando finisce il count delle parentesi
-//                 }
-//                 s.push(block);
-//             }
-//             else
-//             {
-//                 s.push(word);
-//             }
-//         }
-//     }
-// }
 
 void cin_program()
 {
@@ -400,17 +333,8 @@ void cin_program()
             cerr << "Error: " << e.what() << '\n';
         }
     }
-
-    // while (!s.empty())
-    // {
-    //     cout << s.top() << endl;
-    //     s.pop();
-    // }
 }
 
-// problema sul get line => quando va a capo non tiene il conto delle parentesi aperte
-
-// function that format the input file in one line string and call read_input
 void format_input(string file)
 {
     ifstream myfile(file);
@@ -424,11 +348,9 @@ void format_input(string file)
     {
         input += line + " ";
     }
-    // cout << input << endl;
     read_input(input);
 }
 
-// main that reads the input file from the command line
 int main(int argc, char *argv[])
 {
 
@@ -439,17 +361,14 @@ int main(int argc, char *argv[])
     else
     {
         string file = argv[1];
-        // string file = "tests/good_or_bad.gorp";
         try
         {
-            // read_input2(file);
             format_input(file);
         }
         catch (const std::exception &e)
         {
             cerr << "Error: " << e.what() << '\n';
         }
-        // cin_program();
     }
 }
 
