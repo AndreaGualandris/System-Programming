@@ -1,1 +1,6 @@
-0 n store do {    input    dup {     	A n load . store n load	1 + n store 	continue     } if } while  1 i store 1 n load < {    i load j store     A j load 1 - . load  A j load . load > {         A j load 1 - . load 	A j load . load 	A j load 1 - . store 	A j load . store 	j load 1 - j store 	j load 0 == {             1 0 == 	} { 	    A j load 1 - . load  A j load . load >          } ifelse     } while     i load 1 + dup i store     n load <  } while 0 i store 0 n load < {    A i load . load output    i load 1 + dup i store     n load < } while
+0
+do {
+input
+dup { + continue } if
+} while
+output

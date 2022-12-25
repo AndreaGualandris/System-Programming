@@ -27,35 +27,66 @@ void add()
 {
     string b = popStack();
     string a = popStack();
+    if (a == "" || b == "")
+    {
+        cout << "Error: not enough arguments" << endl;
+        exit(1);
+    }
     s.push(to_string(stoi(a) + stoi(b)));
 }
 
 void sub()
 {
-    int b = stoi(popStack());
-    int a = stoi(popStack());
-    s.push(to_string(a - b));
+    string b = popStack();
+    string a = popStack();
+    if (a == "" || b == "")
+    {
+        cout << "Error: not enough arguments" << endl;
+        exit(1);
+    }
+    s.push(to_string(stoi(a) - stoi(b)));
 }
 
 void mul()
 {
-    int b = stoi(popStack());
-    int a = stoi(popStack());
-    s.push(to_string(a * b));
+    string b = popStack();
+    string a = popStack();
+    if (a == "" || b == "")
+    {
+        cout << "Error: not enough arguments" << endl;
+        exit(1);
+    }
+    s.push(to_string(stoi(a) * stoi(b)));
 }
 
 void div()
 {
-    int b = stoi(popStack());
-    int a = stoi(popStack());
-    s.push(to_string(a / b));
+  
+    string b = popStack();
+    string a = popStack();
+    if (a == "" || b == "")
+    {
+        cout << "Error: not enough arguments" << endl;
+        exit(1);
+    }
+    if (stoi(b) == 0)
+    {
+        cout << "Error: division by zero" << endl;
+        exit(1);
+    }
+    s.push(to_string(stoi(a) / stoi(b)));
 }
 
 void greater_fun()
 {
-    int b = stoi(popStack());
-    int a = stoi(popStack());
-    if (a > b)
+    string b = popStack();
+    string a = popStack();
+    if (a == "" || b == "")
+    {
+        cout << "Error: not enough arguments" << endl;
+        exit(1);
+    }
+    if (stoi(a) > stoi(b))
         s.push("true");
     else
         s.push("");
@@ -63,9 +94,14 @@ void greater_fun()
 
 void less_fun()
 {
-    int b = stoi(popStack());
-    int a = stoi(popStack());
-    if (a < b)
+    string b = popStack();
+    string a = popStack();
+    if (a == "" || b == "")
+    {
+        cout << "Error: not enough arguments" << endl;
+        exit(1);
+    }
+    if (stoi(a) < stoi(b))
         s.push("true");
     else
         s.push("");
@@ -73,9 +109,14 @@ void less_fun()
 
 void equal()
 {
-    int b = stoi(popStack());
-    int a = stoi(popStack());
-    if (a == b)
+    string b = popStack();
+    string a = popStack();
+    if (a == "" || b == "")
+    {
+        cout << "Error: not enough arguments" << endl;
+        exit(1);
+    }
+    if (stoi(a) == stoi(b))
         s.push("true");
     else
         s.push("");
@@ -83,9 +124,14 @@ void equal()
 
 void not_equal()
 {
-    int b = stoi(popStack());
-    int a = stoi(popStack());
-    if (a != b)
+    string b = popStack();
+    string a = popStack();
+    if (a == "" || b == "")
+    {
+        cout << "Error: not enough arguments" << endl;
+        exit(1);
+    }
+    if (stoi(a) != stoi(b))
         s.push("true");
     else
         s.push("");
@@ -93,9 +139,14 @@ void not_equal()
 
 void greater_equal_fun()
 {
-    int b = stoi(popStack());
-    int a = stoi(popStack());
-    if (a >= b)
+    string b = popStack();
+    string a = popStack();
+    if (a == "" || b == "")
+    {
+        cout << "Error: not enough arguments" << endl;
+        exit(1);
+    }
+    if (stoi(a) >= stoi(b))
         s.push("true");
     else
         s.push("");
@@ -103,9 +154,14 @@ void greater_equal_fun()
 
 void less_equal_fun()
 {
-    int b = stoi(popStack());
-    int a = stoi(popStack());
-    if (a <= b)
+    string b = popStack();
+    string a = popStack();
+    if (a == "" || b == "")
+    {
+        cout << "Error: not enough arguments" << endl;
+        exit(1);
+    }
+    if (stoi(a) <= stoi(b))
         s.push("true");
     else
         s.push("");
@@ -121,6 +177,11 @@ void concat_fun()
 void load()
 {
     string var = popStack();
+    if (variables.find(var) == variables.end())
+    {
+        cout << "Error: variable not found" << endl;
+        exit(1);
+    }
     s.push(variables[var]);
 }
 
@@ -275,8 +336,7 @@ int check_operation(string word)
     }
 }
 
-
-void read_input(string line) 
+void read_input(string line)
 {
     int open = 0;
 
@@ -285,38 +345,62 @@ void read_input(string line)
 
     while (iss >> word)
     {
-        // call function for check the keys and the variables
-        if (check_operation(word))
-            continue;
-
-        else if (word == "{")
+        try
         {
-            string block;
-            while (iss >> word)
+            if (check_operation(word))
+                continue;
+            else if (word == "{")
             {
-                if (word == "{")
+                string block;
+
+                while (iss >> word)
                 {
-                    open++;
+                    if (word == "{")
+                    {
+                        open++;
+                    }
+                    else if (open > 0 && word == "}")
+                    {
+                        open--;
+                    }
+                    else if (word == "}" && open == 0)
+                    {
+                        break;
+                    }
+                    block += word + " ";
                 }
-                else if (open > 0 && word == "}")
-                {
-                    open--;
-                }
-                else if (word == "}" && open == 0)
-                {
-                    break;
-                }
-                block += word + " ";
+                s.push(block);
             }
-            s.push(block);
+            else
+            {
+                s.push(word);
+            }
         }
-        else
+        catch (const std::exception &e)
         {
-            s.push(word);
+            cerr << "Error: " << e.what() << '\n';
         }
     }
 }
 
+int check_parentesis(string line)
+{
+    int open = 0;
+    int close = 0;
+
+    for (int i = 0; i < line.size(); i++)
+    {
+        if (line[i] == '{')
+            open++;
+        else if (line[i] == '}')
+            close++;
+    }
+
+    if (open == close)
+        return 1;
+    else
+        return 0;
+}
 
 void cin_program()
 {
@@ -326,7 +410,12 @@ void cin_program()
     {
         try
         {
-            read_input(line);
+            if (!check_parentesis(line))
+            {
+                throw std::runtime_error("Parenthesis not balanced inline, if you want write in multiple line:\n\nWrite the code in a file and run the program with the file as argument\n");
+            }
+            else
+                read_input(line);
         }
         catch (const std::exception &e)
         {
@@ -348,6 +437,9 @@ void format_input(string file)
     {
         input += line + " ";
     }
+    if (!check_parentesis(input))
+        throw std::runtime_error("Error: Parenthesis not balanced");
+
     read_input(input);
 }
 
@@ -380,3 +472,5 @@ int main(int argc, char *argv[])
 // result: 0 1
 // 1 do { 1 + } while output
 // result: 1
+
+
