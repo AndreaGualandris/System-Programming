@@ -4,6 +4,7 @@
 #include <vector>
 #include <sstream>
 #include <map>
+#include <fstream>
 
 using namespace std;
 
@@ -11,11 +12,10 @@ map<string, string> variables;
 stack<string> s;
 
 void read_input(string line);
-void cond_ifelse();
 
 string popStack()
 {
-    if(s.empty())
+    if (s.empty())
         return "";
 
     string word = s.top();
@@ -27,7 +27,6 @@ void add()
 {
     string b = popStack();
     string a = popStack();
-
     s.push(to_string(stoi(a) + stoi(b)));
 }
 
@@ -151,7 +150,6 @@ void cond_ifelse()
         read_input(b);
     else
         read_input(a);
-        
 }
 
 void duplicate()
@@ -161,16 +159,16 @@ void duplicate()
     s.push(a);
 }
 
-void while_fun(){
+void while_fun()
+{
     string a = popStack();
     string c = popStack();
-    while(c != ""){
+    while (c != "")
+    {
         read_input(a);
         c = popStack();
     }
 }
-
-
 
 int check_operation(string word)
 {
@@ -287,9 +285,10 @@ void read_input(string line) // passare la stringa da cui leggere per i blocchi 
 
     while (iss >> word)
     {
-        // call function for check the symbols and the variables
+        // call function for check the keys and the variables
         if (check_operation(word))
             continue;
+
         else if (word == "{")
         {
             string block;
@@ -305,6 +304,7 @@ void read_input(string line) // passare la stringa da cui leggere per i blocchi 
                 }
                 else if (word == "}" && open == 0)
                 {
+                    // cout << "Error: Invalid Sintax \"}\" " << endl;       //invalid sintax
                     break;
                 }
                 block += word + " ";
@@ -313,19 +313,80 @@ void read_input(string line) // passare la stringa da cui leggere per i blocchi 
         }
         else
         {
-            // cout << word << endl;
             s.push(word);
         }
     }
 }
 
+// void read_input2(string file) // passare la stringa da cui leggere per i blocchi di codice nello stack
+// {
+//     int open = 0;
+//     int exit = 1;
 
+//     ifstream myfile(file);
+//     string line;
 
-int main()
+//     while (getline(myfile, line))
+//     {
+//         istringstream iss(line);
+//         string word;
+
+//         while (iss >> word)
+//         {
+//             // call function for check the keys and the variables
+//             if (check_operation(word))
+//                 continue;
+
+//             else if (word == "{")
+//             {
+//                 open++;
+//                 string block;
+
+//                 while (exit)
+//                 {
+//                     iss >> word;
+
+//                     if (iss.fail() && open != 0)
+//                     {
+//                         getline(myfile, line);
+//                         istringstream iss(line);
+//                         iss >> word;
+//                     }
+//                     else if (iss.fail() && open == 0)
+//                     {
+//                         break;
+//                     }
+
+//                     if (word == "{")
+//                     {
+//                         open++;
+//                     }
+//                     else if (open > 0 && word == "}")
+//                     {
+//                         open--;
+//                     }
+
+//                     if (word == "}" && open == 0 && iss.fail())
+//                     {
+//                         // cout << "Error: Invalid Sintax \"}\" " << endl;       //invalid sintax
+//                         break;
+//                     }
+//                     block += word + " ";
+
+//                     // non finisce di leggere la riga quando finisce il count delle parentesi
+//                 }
+//                 s.push(block);
+//             }
+//             else
+//             {
+//                 s.push(word);
+//             }
+//         }
+//     }
+// }
+
+void cin_program()
 {
-
-    // read a line from the stdin and push it onto the stack word by word, if there is a { it will push only the block of code into the parenthesis} into the stack
-
     string line;
 
     while (getline(cin, line))
@@ -334,7 +395,7 @@ int main()
         {
             read_input(line);
         }
-        catch(const std::exception& e)
+        catch (const std::exception &e)
         {
             cerr << "Error: " << e.what() << '\n';
         }
@@ -346,3 +407,57 @@ int main()
     //     s.pop();
     // }
 }
+
+// problema sul get line => quando va a capo non tiene il conto delle parentesi aperte
+
+// function that format the input file in one line string and call read_input
+void format_input(string file)
+{
+    ifstream myfile(file);
+
+    if (!myfile.is_open())
+        throw std::runtime_error("Error: File not found");
+
+    string line;
+    string input;
+    while (getline(myfile, line))
+    {
+        input += line + " ";
+    }
+    // cout << input << endl;
+    read_input(input);
+}
+
+// main that reads the input file from the command line
+int main(int argc, char *argv[])
+{
+
+    if (argc < 2)
+    {
+        cin_program();
+    }
+    else
+    {
+        string file = argv[1];
+        // string file = "tests/good_or_bad.gorp";
+        try
+        {
+            // read_input2(file);
+            format_input(file);
+        }
+        catch (const std::exception &e)
+        {
+            cerr << "Error: " << e.what() << '\n';
+        }
+        // cin_program();
+    }
+}
+
+// 1 2 + 3 4 + * 5 6 + * output
+// result: 77
+// 0 n store n load 1 + output
+// result: 1
+// 0 n store n load 1 + n load output output
+// result: 0 1
+// 1 do { 1 + } while output
+// result: 1
