@@ -1,0 +1,9 @@
+    assign a 0
+loop:
+    input x e
+    if e end
+    add a a x
+    goto loop
+end:
+    output a
+    halt

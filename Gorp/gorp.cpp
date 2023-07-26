@@ -463,14 +463,3 @@ int main(int argc, char *argv[])
         }
     }
 }
-
-// 1 2 + 3 4 + * 5 6 + * output
-// result: 77
-// 0 n store n load 1 + output
-// result: 1
-// 0 n store n load 1 + n load output output
-// result: 0 1
-// 1 do { 1 + } while output
-// result: 1
-
-

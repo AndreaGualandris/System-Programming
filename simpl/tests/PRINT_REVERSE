@@ -1,0 +1,15 @@
+    assign i 0
+loop:
+    input x e
+    if e print
+    assign @i x
+    add i i 1
+    goto loop
+print:
+    eq c i 0
+    if c end
+    sub i i 1
+    output @i
+    goto print
+end:
+    halt

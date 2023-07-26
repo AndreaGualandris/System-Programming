@@ -1,0 +1,7 @@
+    assign i 0
+loop:
+    output i
+    add i i 1
+    lt c i 10
+    if c loop
+    halt
